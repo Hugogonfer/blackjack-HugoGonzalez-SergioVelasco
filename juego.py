@@ -1,4 +1,7 @@
 
+from cartas import repartir_carta
+
+
 def calcular_puntos(mano):
     puntos = 0
     ases = 0
@@ -16,7 +19,6 @@ def calcular_puntos(mano):
         else:
             puntos += int(valor)
 
-    # Ajustar los ases si se superan los 21 puntos
     while puntos > 21 and ases > 0:
         puntos -= 10
         ases -= 1
@@ -33,3 +35,34 @@ def comprobar_21(mano):
         return "blackjack"
     else:
         return "continuar"
+
+
+def jugar_banca(banca, baraja):
+    while calcular_puntos(banca) < 17:
+        carta = repartir_carta(baraja)
+
+        if carta is None:
+            break
+
+        banca.append(carta)
+
+    return banca
+
+
+def determinar_ganador(jugador, banca):
+    puntos_jugador = calcular_puntos(jugador)
+    puntos_banca = calcular_puntos(banca)
+
+    if puntos_jugador > 21:
+        return "banca"
+
+    if puntos_banca > 21:
+        return "jugador"
+
+    if puntos_jugador > puntos_banca:
+        return "jugador"
+
+    if puntos_banca > puntos_jugador:
+        return "banca"
+
+    return "empate"
