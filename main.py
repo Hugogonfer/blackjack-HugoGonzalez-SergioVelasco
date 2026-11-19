@@ -1,4 +1,5 @@
 from cartas import crear_baraja, mezclar_baraja, repartir_carta
+from juego import calcular_puntos, jugar_banca, determinar_ganador
 from interfaz import (
     mostrar_bienvenida,
     mostrar_menu,
@@ -23,30 +24,49 @@ def jugar_partida():
         banca.append(repartir_carta(baraja))
 
     mostrar_cartas(jugador, "Jugador")
+    mostrar_puntuacion("Jugador", calcular_puntos(jugador))
+
     mostrar_cartas(banca[:1], "Banca")
 
-    while True:
+    # Turno del jugador
+    while calcular_puntos(jugador) < 21:
         decision = pedir_decision()
 
         if decision == "1":
             carta = repartir_carta(baraja)
             jugador.append(carta)
 
-            print("\nHas recibido otra carta.")
             mostrar_cartas(jugador, "Jugador")
+            mostrar_puntuacion("Jugador", calcular_puntos(jugador))
 
         elif decision == "2":
             print("\nTe has plantado.")
             break
 
-    print("\n===== FIN DEL TURNO =====")
-    mostrar_cartas(jugador, "Jugador")
-    mostrar_cartas(banca, "Banca")
+    puntos_jugador = calcular_puntos(jugador)
 
-    # Pendiente de integrar juego.py:
-    # calcular_puntos()
-    # jugar_banca()
-    # determinar_ganador()
+    if puntos_jugador > 21:
+        print("\nTe has pasado de 21.")
+
+    elif puntos_jugador == 21:
+        print("\nHas conseguido 21 puntos.")
+
+    # Turno de la banca
+    if puntos_jugador <= 21:
+        jugar_banca(banca, baraja)
+
+    # Mostrar las cartas finales
+    print("\n===== FIN DE LA PARTIDA =====")
+
+    mostrar_cartas(jugador, "Jugador")
+    mostrar_puntuacion("Jugador", calcular_puntos(jugador))
+
+    mostrar_cartas(banca, "Banca")
+    mostrar_puntuacion("Banca", calcular_puntos(banca))
+
+    # Determinar el ganador
+    resultado = determinar_ganador(jugador, banca)
+    mostrar_resultado(resultado)
 
 
 def main():
